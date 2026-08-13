@@ -28,4 +28,8 @@ app.use('/notifications', notificationsRoute);
 const dashboardRoute = require('./routes/dashboard');
 app.use('/dashboard', dashboardRoute);
 
+// Customers Route
+const customersRoute = require('./routes/customers');
+app.use('/customers', customersRoute);
+
 module.exports = app;

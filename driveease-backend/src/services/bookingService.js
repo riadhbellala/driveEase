@@ -1,6 +1,7 @@
 const supabase = require('../config/supabaseClient');
 
 const createBooking = async (customerId, vehicleId, startDate, endDate) => {
+  console.log('[BookingService] createBooking called — v2 with admin notifications');
   // Fetch vehicle to get daily_price
   const { data: vehicle, error: vehicleError } = await supabase
     .from('vehicles')
@@ -55,16 +56,38 @@ const createBooking = async (customerId, vehicleId, startDate, endDate) => {
     throw insertError;
   }
 
-  // Fire-and-forget notification — failure must not block the booking
-  const notificationMessage =
-    `Your booking request for ${vehicle.brand} ${vehicle.model} has been submitted and is pending approval.`;
+  // Insert notifications for customer and all admin users
+  try {
+    const [{ data: customerProfile }, { data: admins }] = await Promise.all([
+      supabase.from('profiles').select('full_name, email').eq('id', customerId).single(),
+      supabase.from('profiles').select('id').eq('role', 'admin')
+    ]);
 
-  const { error: notifError } = await supabase
-    .from('notifications')
-    .insert({ user_id: customerId, message: notificationMessage });
+    const customerName = customerProfile?.full_name || customerProfile?.email || 'A customer';
+    const notifs = [];
 
-  if (notifError) {
-    console.error('Failed to insert booking notification:', notifError.message);
+    // Customer Notification
+    notifs.push({
+      user_id: customerId,
+      message: `Your booking request for ${vehicle.brand} ${vehicle.model} ($${totalPrice}) has been submitted and is pending approval.`
+    });
+
+    // Admin Notifications
+    if (admins && admins.length > 0) {
+      admins.forEach(admin => {
+        notifs.push({
+          user_id: admin.id,
+          message: `New booking request: ${customerName} booked ${vehicle.brand} ${vehicle.model} ($${totalPrice}).`
+        });
+      });
+    }
+
+    const { error: notifError } = await supabase.from('notifications').insert(notifs);
+    if (notifError) {
+      console.error('Failed to insert booking creation notifications:', notifError.message);
+    }
+  } catch (err) {
+    console.error('Notification dispatch error:', err.message);
   }
 
   return booking;
@@ -76,8 +99,16 @@ const getMyBookings = async (customerId) => {
     .select(`
       *,
       vehicles (
+        id,
         brand,
-        model
+        model,
+        daily_price,
+        category,
+        fuel_type,
+        transmission,
+        vehicle_images (
+          storage_path
+        )
       )
     `)
     .eq('customer_id', customerId)
@@ -128,14 +159,40 @@ const cancelBooking = async (bookingId, customerId) => {
     throw updateError;
   }
 
-  // Non-blocking notification insert
-  const notificationMessage = `Your booking for ${booking.start_date} to ${booking.end_date} has been cancelled.`;
-  const { error: notifError } = await supabase
-    .from('notifications')
-    .insert({ user_id: customerId, message: notificationMessage });
+  // Insert notifications for customer and all admin users
+  try {
+    const [{ data: v }, { data: customerProfile }, { data: admins }] = await Promise.all([
+      supabase.from('vehicles').select('brand, model').eq('id', booking.vehicle_id).single(),
+      supabase.from('profiles').select('full_name, email').eq('id', customerId).single(),
+      supabase.from('profiles').select('id').eq('role', 'admin')
+    ]);
 
-  if (notifError) {
-    console.error('Failed to insert cancellation notification:', notifError.message);
+    const carName = v ? `${v.brand} ${v.model}` : 'vehicle';
+    const customerName = customerProfile?.full_name || customerProfile?.email || 'A customer';
+    const notifs = [];
+
+    // Customer Notification
+    notifs.push({
+      user_id: customerId,
+      message: `Your booking for ${carName} (${booking.start_date} to ${booking.end_date}) has been cancelled.`
+    });
+
+    // Admin Notifications
+    if (admins && admins.length > 0) {
+      admins.forEach(admin => {
+        notifs.push({
+          user_id: admin.id,
+          message: `Booking cancelled: ${customerName} cancelled reservation for ${carName}.`
+        });
+      });
+    }
+
+    const { error: notifError } = await supabase.from('notifications').insert(notifs);
+    if (notifError) {
+      console.error('Failed to insert cancellation notifications:', notifError.message);
+    }
+  } catch (err) {
+    console.error('Cancellation notification dispatch error:', err.message);
   }
 
   return updatedBooking;

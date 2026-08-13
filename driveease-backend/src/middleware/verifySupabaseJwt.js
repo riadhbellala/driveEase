@@ -20,6 +20,16 @@ const verifySupabaseJwt = async (req, res, next) => {
       return res.status(401).json({ error: 'Invalid or expired token' });
     }
 
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_disabled')
+      .eq('id', user.id)
+      .single();
+
+    if (profile?.is_disabled) {
+      return res.status(401).json({ error: 'This account has been disabled.' });
+    }
+
     req.user = user;
     next();
   } catch (error) {

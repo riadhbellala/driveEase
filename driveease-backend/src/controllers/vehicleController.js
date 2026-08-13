@@ -69,6 +69,19 @@ const addVehicleImage = async (req, res) => {
   }
 };
 
+const getAvailableVehicles = async (req, res) => {
+  try {
+    const { start_date, end_date } = req.query;
+    if (!start_date || !end_date) {
+      return res.status(400).json({ error: 'start_date and end_date query parameters are required' });
+    }
+    const vehicles = await vehicleService.getAvailableVehicles(start_date, end_date);
+    res.status(200).json(vehicles);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   createVehicle,
   getAllVehicles,
@@ -76,4 +89,5 @@ module.exports = {
   updateVehicle,
   softDeleteVehicle,
   addVehicleImage,
+  getAvailableVehicles,
 };

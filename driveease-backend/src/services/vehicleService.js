@@ -88,6 +88,23 @@ const addVehicleImage = async (vehicleId, storagePath, sortOrder) => {
   return image;
 };
 
+const getAvailableVehicles = async (startDate, endDate) => {
+  const { data: vehicles, error } = await supabase.rpc('get_available_vehicles', {
+    p_start_date: startDate,
+    p_end_date: endDate,
+  });
+  if (error) throw error;
+
+  const vehiclesWithImages = await Promise.all(
+    (vehicles || []).map(async (vehicle) => {
+      const images = await getVehicleImages(vehicle.id);
+      return { ...vehicle, images };
+    })
+  );
+
+  return vehiclesWithImages;
+};
+
 module.exports = {
   createVehicle,
   getAllVehicles,
@@ -96,4 +113,5 @@ module.exports = {
   softDeleteVehicle,
   addVehicleImage,
   getVehicleImages,
+  getAvailableVehicles,
 };
