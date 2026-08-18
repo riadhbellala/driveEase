@@ -1,6 +1,9 @@
 const supabase = require('../config/supabaseClient');
 
-const createVehicle = async (data) => {
+const createVehicle = async (data, agencyId) => {
+  if (agencyId) {
+    data.agency_id = agencyId;
+  }
   const { data: vehicle, error } = await supabase
     .from('vehicles')
     .insert(data)
@@ -20,11 +23,22 @@ const getVehicleImages = async (vehicleId) => {
   return images || [];
 };
 
-const getAllVehicles = async () => {
-  const { data: vehicles, error } = await supabase
-    .from('vehicles')
-    .select('*')
-    .is('deleted_at', null);
+const getAllVehicles = async (agencyId) => {
+  let query = supabase.from('vehicles');
+  
+  if (agencyId) {
+    query = query
+      .select('*')
+      .is('deleted_at', null)
+      .eq('agency_id', agencyId);
+  } else {
+    query = query
+      .select('*, agencies!inner(website_enabled)')
+      .is('deleted_at', null)
+      .eq('agencies.website_enabled', true);
+  }
+
+  const { data: vehicles, error } = await query;
   if (error) throw error;
 
   const vehiclesWithImages = await Promise.all(
@@ -40,9 +54,10 @@ const getAllVehicles = async () => {
 const getVehicleById = async (id) => {
   const { data: vehicle, error } = await supabase
     .from('vehicles')
-    .select('*')
+    .select('*, agencies!inner(website_enabled)')
     .eq('id', id)
     .is('deleted_at', null)
+    .eq('agencies.website_enabled', true)
     .single();
   if (error) throw error;
 
@@ -95,8 +110,25 @@ const getAvailableVehicles = async (startDate, endDate) => {
   });
   if (error) throw error;
 
+  let activeAgencies = new Set();
+  const agencyIds = [...new Set((vehicles || []).map(v => v.agency_id))];
+  
+  if (agencyIds.length > 0) {
+    const { data: agencies, error: agenciesError } = await supabase
+      .from('agencies')
+      .select('id')
+      .in('id', agencyIds)
+      .eq('website_enabled', true);
+      
+    if (!agenciesError && agencies) {
+      activeAgencies = new Set(agencies.map(a => a.id));
+    }
+  }
+
+  const filteredVehicles = (vehicles || []).filter(v => activeAgencies.has(v.agency_id));
+
   const vehiclesWithImages = await Promise.all(
-    (vehicles || []).map(async (vehicle) => {
+    filteredVehicles.map(async (vehicle) => {
       const images = await getVehicleImages(vehicle.id);
       return { ...vehicle, images };
     })

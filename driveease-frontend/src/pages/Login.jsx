@@ -19,7 +19,7 @@ function Login() {
         .eq('id', userId)
         .single();
 
-      if (profile?.role === 'admin') {
+      if (profile?.role === 'agency_owner' || profile?.role === 'agency_staff') {
         navigate('/admin');
         return;
       }

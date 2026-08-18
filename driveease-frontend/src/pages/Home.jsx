@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import MotionButton from '../components/ui/motion-button';
 import GradientButton from '../components/ui/gradient-button';
 import Footer from '../components/Footer';
+import { API_URL } from '../config';
 
 function Home() {
   const navigate = useNavigate();
@@ -78,7 +79,7 @@ function Home() {
   const [activeSlide, setActiveSlide] = useState(0);
 
   useEffect(() => {
-    fetch('http://localhost:4000/vehicles')
+    fetch(`${API_URL}/vehicles`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -132,7 +133,7 @@ function Home() {
     try {
       setLoading(true);
       const res = await fetch(
-        `http://localhost:4000/vehicles/available?start_date=${startDate}&end_date=${endDate}`
+        `${API_URL}/vehicles/available?start_date=${startDate}&end_date=${endDate}`
       );
 
       if (!res.ok) {

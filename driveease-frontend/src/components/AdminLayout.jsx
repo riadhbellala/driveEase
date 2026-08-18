@@ -5,6 +5,7 @@ import carLogo from '../assets/carlogo.png';
 import NotificationBell from './NotificationBell';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
+import { API_URL } from '../config';
   LayoutDashboard, Car, CalendarCheck, Users, LogOut,
   PlusCircle, Menu, X, ChevronRight, TrendingUp,
   ArrowLeft,
@@ -72,6 +73,7 @@ function SideItem({ to, icon: Icon, label, end = false }) {
 export function AdminLayout({ children, title, subtitle, action }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [adminName, setAdminName] = useState('Admin');
+  const [agencyName, setAgencyName] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -79,6 +81,18 @@ export function AdminLayout({ children, title, subtitle, action }) {
       if (!session) return;
       const { data: p } = await supabase.from('profiles').select('full_name').eq('id', session.user.id).single();
       if (p?.full_name) setAdminName(p.full_name);
+
+      try {
+        const res = await fetch(`${API_URL}/agencies/me`, {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+        if (res.ok) {
+          const agency = await res.json();
+          setAgencyName(agency.name || '');
+        }
+      } catch (err) {
+        console.error('[AdminLayout] Failed to fetch agency:', err);
+      }
     });
   }, []);
 
@@ -110,7 +124,7 @@ export function AdminLayout({ children, title, subtitle, action }) {
             <div className="px-6 py-6 pb-8">
               <Link to="/" className="flex items-center gap-3 group">
                 <img src={carLogo} alt="DriveEase Logo" className="h-8 w-auto object-contain transition-transform group-hover:scale-105" />
-                <span className="font-display font-bold text-xl tracking-tight text-[#0B0D10]">DriveEase</span>
+                <span className="font-display font-bold text-xl tracking-tight text-[#0B0D10]">{agencyName || 'DriveEase'}</span>
               </Link>
             </div>
 
@@ -205,7 +219,7 @@ export function AdminLayout({ children, title, subtitle, action }) {
             <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-                <path d="Mm22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
               </svg>
             </button>
             <NotificationBell />

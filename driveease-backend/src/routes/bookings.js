@@ -9,6 +9,7 @@ const {
   cancelBooking,
   getAllBookings,
   updateBookingStatus,
+  createStaffBooking,
 } = require('../controllers/bookingController');
 
 // POST / — any authenticated user can create a booking
@@ -20,7 +21,9 @@ router.get('/', verifySupabaseJwt, getMyBookings);
 // PATCH /:id/cancel — cancel a booking
 router.patch('/:id/cancel', verifySupabaseJwt, cancelBooking);
 
-// Admin Routes
+// Admin / Staff Routes
+// POST /staff — agency staff can create approved bookings directly
+router.post('/staff', verifySupabaseJwt, requireAdmin, createStaffBooking);
 // GET /admin/all — fetch all bookings for admin dashboard
 router.get('/admin/all', verifySupabaseJwt, requireAdmin, getAllBookings);
 

@@ -5,7 +5,7 @@ const createBooking = async (customerId, vehicleId, startDate, endDate) => {
   // Fetch vehicle to get daily_price
   const { data: vehicle, error: vehicleError } = await supabase
     .from('vehicles')
-    .select('daily_price, brand, model')
+    .select('daily_price, brand, model, agency_id')
     .eq('id', vehicleId)
     .is('deleted_at', null)
     .single();
@@ -45,6 +45,7 @@ const createBooking = async (customerId, vehicleId, startDate, endDate) => {
       end_date: endDate,
       status: 'pending',
       total_price: totalPrice,
+      agency_id: vehicle.agency_id,
     })
     .select()
     .single();
@@ -88,6 +89,92 @@ const createBooking = async (customerId, vehicleId, startDate, endDate) => {
     }
   } catch (err) {
     console.error('Notification dispatch error:', err.message);
+  }
+
+  return booking;
+};
+
+const createStaffBooking = async (agencyId, vehicleId, startDate, endDate, { customerId, walkinName, walkinPhone }) => {
+  console.log('[BookingService] createStaffBooking called');
+  // Fetch vehicle to get daily_price and agency_id
+  const { data: vehicle, error: vehicleError } = await supabase
+    .from('vehicles')
+    .select('daily_price, brand, model, agency_id')
+    .eq('id', vehicleId)
+    .is('deleted_at', null)
+    .single();
+
+  if (vehicleError || !vehicle) {
+    throw new Error(`Vehicle not found with id: ${vehicleId}`);
+  }
+
+  if (vehicle.agency_id !== agencyId) {
+    throw new Error('Vehicle does not belong to your agency');
+  }
+
+  // Calculate total price
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  const diffMs = end - start;
+  const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 1) {
+    throw new Error('End date must be after start date.');
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const startNormalized = new Date(start);
+  startNormalized.setHours(0, 0, 0, 0);
+
+  if (startNormalized < today) {
+    throw new Error('Start date cannot be in the past.');
+  }
+
+  const totalPrice = vehicle.daily_price * diffDays;
+
+  // Insert booking
+  const insertData = {
+    vehicle_id: vehicleId,
+    start_date: startDate,
+    end_date: endDate,
+    status: 'approved',
+    total_price: totalPrice,
+    agency_id: agencyId,
+  };
+
+  if (customerId) {
+    insertData.customer_id = customerId;
+  } else {
+    insertData.walkin_name = walkinName;
+    insertData.walkin_phone = walkinPhone;
+  }
+
+  const { data: booking, error: insertError } = await supabase
+    .from('bookings')
+    .insert(insertData)
+    .select()
+    .single();
+
+  if (insertError) {
+    if (insertError.code === '23P01') {
+      throw new Error('This vehicle is already booked for the selected dates.');
+    }
+    throw insertError;
+  }
+
+  if (customerId) {
+    try {
+      const { error: notifError } = await supabase
+        .from('notifications')
+        .insert({ user_id: customerId, message: `Your booking for ${vehicle.brand} ${vehicle.model} has been created and approved.` });
+      
+      if (notifError) {
+        console.error('Failed to insert booking notification:', notifError.message);
+      }
+    } catch (err) {
+      console.error('Notification dispatch error:', err.message);
+    }
   }
 
   return booking;
@@ -198,8 +285,8 @@ const cancelBooking = async (bookingId, customerId) => {
   return updatedBooking;
 };
 
-const getAllBookings = async () => {
-  const { data: bookings, error } = await supabase
+const getAllBookings = async (agencyId) => {
+  let query = supabase
     .from('bookings')
     .select(`
       *,
@@ -207,6 +294,12 @@ const getAllBookings = async () => {
       profiles (full_name)
     `)
     .order('created_at', { ascending: false });
+
+  if (agencyId) {
+    query = query.eq('agency_id', agencyId);
+  }
+
+  const { data: bookings, error } = await query;
 
   if (error) {
     throw error;
@@ -253,4 +346,5 @@ module.exports = {
   cancelBooking,
   getAllBookings,
   updateBookingStatus,
+  createStaffBooking,
 };

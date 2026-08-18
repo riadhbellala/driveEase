@@ -4,7 +4,17 @@ const cors = require('cors');
 const app = express();
 
 // Middleware
-app.use(cors());
+const corsOptions = {
+  origin: [
+    'http://localhost:5173',           // web app local dev
+    'http://localhost:5174',           // electron renderer local dev (adjust if different)
+    'https://YOUR-VERCEL-DOMAIN.vercel.app',  // web app production (update once deployed)
+    null                                // Electron packaged app (file:// origin)
+  ],
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Health Check Route
@@ -31,5 +41,9 @@ app.use('/dashboard', dashboardRoute);
 // Customers Route
 const customersRoute = require('./routes/customers');
 app.use('/customers', customersRoute);
+
+// Agencies Route
+const agenciesRoute = require('./routes/agencies');
+app.use('/agencies', agenciesRoute);
 
 module.exports = app;

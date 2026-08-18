@@ -21,7 +21,7 @@ export default function RequireAdmin({ children }) {
         .eq('id', session.user.id)
         .single();
 
-      if (profile?.role === 'admin') {
+      if (profile?.role === 'agency_owner' || profile?.role === 'agency_staff') {
         setIsAdmin(true);
       }
       

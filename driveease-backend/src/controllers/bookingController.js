@@ -18,6 +18,34 @@ const createBooking = async (req, res) => {
   }
 };
 
+const createStaffBooking = async (req, res) => {
+  const agencyId = req.user?.agency_id;
+  const { vehicle_id, start_date, end_date, customer_id, walkin_name, walkin_phone } = req.body;
+
+  if (!customer_id && !walkin_name) {
+    return res.status(400).json({ error: 'Either a customer_id or a walkin_name must be provided.' });
+  }
+
+  try {
+    const booking = await bookingService.createStaffBooking(
+      agencyId,
+      vehicle_id,
+      start_date,
+      end_date,
+      { customerId: customer_id, walkinName: walkin_name, walkinPhone: walkin_phone }
+    );
+    return res.status(201).json(booking);
+  } catch (err) {
+    if (err.message.startsWith('Vehicle not found') || err.message === 'Vehicle does not belong to your agency') {
+      return res.status(404).json({ error: err.message });
+    }
+    if (err.message === 'This vehicle is already booked for the selected dates.') {
+      return res.status(409).json({ error: err.message });
+    }
+    return res.status(400).json({ error: err.message });
+  }
+};
+
 const getMyBookings = async (req, res) => {
   const customerId = req.user.id;
   try {
@@ -54,7 +82,8 @@ const cancelBooking = async (req, res) => {
 
 const getAllBookings = async (req, res) => {
   try {
-    const bookings = await bookingService.getAllBookings();
+    const agencyId = req.user?.agency_id;
+    const bookings = await bookingService.getAllBookings(agencyId);
     return res.status(200).json(bookings);
   } catch (err) {
     return res.status(500).json({ error: err.message });
@@ -89,4 +118,5 @@ module.exports = {
   cancelBooking,
   getAllBookings,
   updateBookingStatus,
+  createStaffBooking,
 };

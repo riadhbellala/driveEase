@@ -2,7 +2,8 @@ const vehicleService = require('../services/vehicleService');
 
 const createVehicle = async (req, res) => {
   try {
-    const vehicle = await vehicleService.createVehicle(req.body);
+    const agencyId = req.user?.agency_id;
+    const vehicle = await vehicleService.createVehicle(req.body, agencyId);
     res.status(201).json(vehicle);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -11,7 +12,21 @@ const createVehicle = async (req, res) => {
 
 const getAllVehicles = async (req, res) => {
   try {
-    const vehicles = await vehicleService.getAllVehicles();
+    const agencyId = req.user?.agency_id;
+    const vehicles = await vehicleService.getAllVehicles(agencyId);
+    res.status(200).json(vehicles);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const getMyVehicles = async (req, res) => {
+  const agencyId = req.user?.agency_id;
+  if (!agencyId) {
+    return res.status(400).json({ error: 'No agency associated with this account' });
+  }
+  try {
+    const vehicles = await vehicleService.getAllVehicles(agencyId);
     res.status(200).json(vehicles);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -85,6 +100,7 @@ const getAvailableVehicles = async (req, res) => {
 module.exports = {
   createVehicle,
   getAllVehicles,
+  getMyVehicles,
   getVehicleById,
   updateVehicle,
   softDeleteVehicle,

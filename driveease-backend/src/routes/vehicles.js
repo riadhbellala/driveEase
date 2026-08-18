@@ -5,6 +5,7 @@ const requireAdmin = require('../middleware/requireAdmin');
 
 const router = express.Router();
 
+router.get('/mine', verifySupabaseJwt, requireAdmin, vehicleController.getMyVehicles);
 router.get('/', vehicleController.getAllVehicles);
 router.get('/available', vehicleController.getAvailableVehicles);
 router.get('/:id', vehicleController.getVehicleById);

@@ -22,6 +22,7 @@ import {
 import GradientButton from '../components/ui/gradient-button';
 import { Announcement, AnnouncementTag, AnnouncementTitle } from '../components/ui/announcement';
 import Footer from '../components/Footer';
+import { API_URL } from '../config';
 
 function MyBookings() {
   const [bookings, setBookings] = useState([]);
@@ -42,7 +43,7 @@ function MyBookings() {
           return;
         }
 
-        const res = await fetch('http://localhost:4000/bookings', {
+        const res = await fetch(`${API_URL}/bookings`, {
           headers: {
             'Authorization': `Bearer ${session.access_token}`
           }
@@ -87,7 +88,7 @@ function MyBookings() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      const res = await fetch(`http://localhost:4000/bookings/${bookingId}/cancel`, {
+      const res = await fetch(`${API_URL}/bookings/${bookingId}/cancel`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${session.access_token}`

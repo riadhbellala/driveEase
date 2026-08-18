@@ -4,7 +4,6 @@ const customerController = require('../controllers/customerController');
 const verifySupabaseJwt = require('../middleware/verifySupabaseJwt');
 const requireAdmin = require('../middleware/requireAdmin');
 
-router.get('/', verifySupabaseJwt, requireAdmin, customerController.getAllCustomers);
-router.patch('/:id/disable', verifySupabaseJwt, requireAdmin, customerController.toggleCustomerDisabled);
+router.get('/', verifySupabaseJwt, requireAdmin, customerController.getAgencyCustomers);
 
 module.exports = router;

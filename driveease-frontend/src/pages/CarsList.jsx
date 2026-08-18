@@ -19,6 +19,7 @@ import {
   Info
 } from 'lucide-react';
 import Footer from '../components/Footer';
+import { API_URL } from '../config';
 
 function CarsList() {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ function CarsList() {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch('http://localhost:4000/vehicles');
+        const response = await fetch(`${API_URL}/vehicles`);
         
         if (!response.ok) {
           throw new Error(`Failed to fetch vehicles: ${response.statusText}`);

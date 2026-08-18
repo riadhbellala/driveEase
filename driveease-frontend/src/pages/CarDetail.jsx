@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import GradientButton from '../components/ui/gradient-button';
 import Footer from '../components/Footer';
+import { API_URL } from '../config';
 
 function CarDetail() {
   const { id } = useParams();
@@ -43,7 +44,7 @@ function CarDetail() {
         setLoading(true);
         setError(null);
         
-        const response = await fetch(`http://localhost:4000/vehicles/${id}`);
+        const response = await fetch(`${API_URL}/vehicles/${id}`);
         
         if (!response.ok) {
           throw new Error('Vehicle not found');
@@ -137,7 +138,7 @@ function CarDetail() {
 
     try {
       setIsBooking(true);
-      const res = await fetch('http://localhost:4000/bookings', {
+      const res = await fetch(`${API_URL}/bookings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

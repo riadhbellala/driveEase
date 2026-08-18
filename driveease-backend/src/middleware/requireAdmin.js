@@ -8,14 +8,15 @@ const requireAdmin = async (req, res, next) => {
   try {
     const { data: profile, error } = await supabase
       .from('profiles')
-      .select('role')
+      .select('role, agency_id')
       .eq('id', req.user.id)
       .single();
 
-    if (error || !profile || profile.role !== 'admin') {
-      return res.status(403).json({ error: 'Admin access required' });
+    if (error || !profile || (profile.role !== 'agency_owner' && profile.role !== 'agency_staff')) {
+      return res.status(403).json({ error: 'Agency staff or owner access required' });
     }
 
+    req.user.agency_id = profile.agency_id;
     next();
   } catch (err) {
     return res.status(500).json({ error: 'Internal server error checking admin status' });
