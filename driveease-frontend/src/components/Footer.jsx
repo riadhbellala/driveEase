@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import carLogo from '../assets/carlogo.png';
+import carLogo from '../assets/logo.webp';
 
 export function Footer() {
   return (
@@ -12,7 +12,7 @@ export function Footer() {
         <div className="absolute inset-0 z-0">
           <img 
             src="/images/cta_road.png" 
-            alt="DriveEase Luxury Car Road" 
+            alt="Drivo Luxury Car Road" 
             className="w-full h-full object-cover object-center filter brightness-90"
           />
           {/* Smooth gradient overlay fading down into dark footer background */}
@@ -38,10 +38,10 @@ export function Footer() {
             <Link to="/" className="flex items-center space-x-3 group w-fit">
               <img 
                 src={carLogo} 
-                alt="DriveEase Logo" 
+                alt="Drivo Logo" 
                 className="h-9 w-auto object-contain transition-transform group-hover:scale-105" 
               />
-              <span className="font-display font-bold text-2xl tracking-tight text-white">driveease<span className="text-xs align-super opacity-60 font-body">™</span></span>
+              <span className="font-display font-bold text-2xl tracking-tight text-white">drivo<span className="text-xs align-super opacity-60 font-body">™</span></span>
             </Link>
 
             <div className="space-y-0.5 pt-1 font-body text-xs text-[#A8C9C1]">
@@ -100,7 +100,7 @@ export function Footer() {
         {/* Horizontal Divider Line & Social Icons Row */}
         <div className="mt-8 pt-4 border-t border-[#1C4D46] flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-[11px] text-[#A8C9C1]/60 font-body">
-            DriveEase Luxury Car Rentals
+            Drivo Luxury Car Rentals
           </p>
 
           <div className="flex items-center space-x-5 text-[#A8C9C1]">

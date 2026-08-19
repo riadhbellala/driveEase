@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import carLogo from '../assets/carlogo.png';
+import carLogo from '../assets/logo.webp';
 import { supabase } from '../lib/supabaseClient';
 import { motion } from 'framer-motion';
 import { API_URL } from '../config';
@@ -119,7 +119,7 @@ function Register() {
       {/* TOP LEFT BRAND LOGO */}
       <div className="relative z-20">
         <Link to="/" className="inline-flex items-center group">
-          <img src={carLogo} alt="DriveEase Logo" className="h-10 w-auto object-contain transition-transform group-hover:scale-105 drop-shadow-lg" />
+          <img src={carLogo} alt="Drivo Logo" className="h-10 w-auto object-contain transition-transform group-hover:scale-105 drop-shadow-lg" />
         </Link>
       </div>
 
@@ -307,7 +307,7 @@ function Register() {
       {/* FOOTER COPYRIGHT */}
       <div className="relative z-20 text-center sm:text-left">
         <p className="text-[11px] font-body text-white/70 drop-shadow-sm">
-          © {new Date().getFullYear()} DriveEase Luxury Rentals. All rights reserved.
+          © {new Date().getFullYear()} Drivo Luxury Rentals. All rights reserved.
         </p>
       </div>
 

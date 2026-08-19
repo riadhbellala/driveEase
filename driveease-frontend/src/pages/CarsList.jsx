@@ -110,7 +110,7 @@ function CarsList() {
             <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/20">
               <Sparkles className="w-4 h-4 text-[#E8542E]" />
               <span className="font-display font-semibold text-xs text-white uppercase tracking-wider">
-                DriveEase Exclusive Fleet
+                Drivo Exclusive Fleet
               </span>
             </div>
 
@@ -266,7 +266,7 @@ function CarsList() {
         {loading ? (
           <div className="py-24 text-center font-body text-[#0B0D10]/60">
             <div className="inline-block w-10 h-10 border-4 border-[#0B0D10] border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p className="font-display font-bold text-sm uppercase tracking-wider">Loading DriveEase Fleet...</p>
+            <p className="font-display font-bold text-sm uppercase tracking-wider">Loading Drivo Fleet...</p>
           </div>
         ) : error ? (
           <div className="py-12 text-center text-red-600 bg-red-50 rounded-3xl border border-red-200">
@@ -402,7 +402,7 @@ function CarsList() {
           </h2>
 
           <p className="font-body text-white/70 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
-            DriveEase sets the standard for high-performance sustainable luxury. 100% verified agencies, instant booking, and VIP concierge support.
+            Drivo sets the standard for high-performance sustainable luxury. 100% verified agencies, instant booking, and VIP concierge support.
           </p>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import carLogo from './assets/carlogo.png';
+import carLogo from '../assets/logo.webp';
 import { supabase } from './lib/supabaseClient';
 import GradientButton from './components/ui/gradient-button';
 import Home from './pages/Home';
@@ -85,7 +85,7 @@ function HeaderNav() {
       <header className="pointer-events-auto bg-white/40 backdrop-blur-xl border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] rounded-full px-6 py-3 flex items-center justify-between w-full max-w-5xl transition-all">
         {/* Brand Logo */}
         <Link to="/" className="flex items-center group shrink-0">
-          <img src={carLogo} alt="DriveEase Logo" className="h-9 w-auto object-contain transition-transform group-hover:scale-105" />
+          <img src={carLogo} alt="Drivo Logo" className="h-9 w-auto object-contain transition-transform group-hover:scale-105" />
         </Link>
 
         {/* Navigation Pills */}

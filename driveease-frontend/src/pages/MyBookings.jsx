@@ -205,7 +205,7 @@ function MyBookings() {
         >
           <div className="space-y-3 z-10">
             <Announcement themed className="bg-emerald-50 text-[#1A6340] border-emerald-200/80 hover:bg-emerald-100/60 transition-colors">
-              <AnnouncementTag className="bg-[#1A6340] text-white font-bold">DriveEase Perks</AnnouncementTag>
+              <AnnouncementTag className="bg-[#1A6340] text-white font-bold">Drivo Perks</AnnouncementTag>
               <AnnouncementTitle>
                 24/7 Roadside Assistance & VIP Support included on active reservations
                 <ArrowUpRight size={14} className="shrink-0 opacity-70" />

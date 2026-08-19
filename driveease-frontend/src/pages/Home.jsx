@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import carLogo from '../assets/carlogo.png';
+import carLogo from '../assets/logo.webp';
 import { supabase } from '../lib/supabaseClient';
 import { Search, CalendarDays, Key, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -188,7 +188,7 @@ function Home() {
           {/* Logo & Main Nav Pills */}
           <div className="flex items-center space-x-6 w-full lg:w-auto justify-between lg:justify-start">
             <Link to="/" className="flex items-center group">
-              <img src={carLogo} alt="DriveEase Logo" className="h-10 w-auto object-contain transition-transform group-hover:scale-105" />
+              <img src={carLogo} alt="Drivo Logo" className="h-10 w-auto object-contain transition-transform group-hover:scale-105" />
             </Link>
 
             {/* Nav Pills */}
@@ -291,7 +291,7 @@ function Home() {
                 Since 2026
               </div>
               <div className="flex items-center space-x-2 font-medium text-[#0B0D10]">
-                <span>📍 DriveEase</span>
+                <span>📍 Drivo</span>
               </div>
               <p className="text-[#0B0D10]/70">
                 Premium fleet situated in prime spots with scenic views.
@@ -905,7 +905,7 @@ function Home() {
                 DRIVEEASE ONE: TURN RENTALS INTO REWARDS
               </h2>
               <p className="font-body text-white/80 mb-6 text-sm md:text-base">
-                Join DriveEase ONE now to unlock exclusive savings, priority booking, and premium upgrades on every reservation.
+                Join Drivo ONE now to unlock exclusive savings, priority booking, and premium upgrades on every reservation.
               </p>
               <button className="px-8 py-3 rounded-full border border-white text-white font-body text-sm font-semibold hover:bg-white hover:text-black transition-colors">
                 Learn more
@@ -996,7 +996,7 @@ function Home() {
             className="space-y-6"
           >
             <p className="font-display font-bold text-2xl md:text-4xl lg:text-5xl text-white leading-snug tracking-tight">
-              DriveEase is the only rental company I've never had an issue with. Seriously… they've turned me into a lifelong client.
+              Drivo is the only rental company I've never had an issue with. Seriously… they've turned me into a lifelong client.
             </p>
             <cite className="block font-body text-white/70 text-sm md:text-base not-italic tracking-wide">
               — Sarah M., Paris
